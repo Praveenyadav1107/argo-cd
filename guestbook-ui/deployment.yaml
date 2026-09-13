@@ -11,6 +11,31 @@ items:
       app.properties: |
         theme=light
         feature_flag=true
+  - apiVersion: v1
+    kind: PersistentVolume
+    metadata:
+      name: guestbook-ui-pv
+      labels:
+        app: guestbook-ui
+    spec:
+      capacity:
+        storage: 1Gi
+      accessModes:
+        - ReadWriteOnce
+      hostPath:
+        path: "/mnt/data"
+  - apiVersion: v1
+    kind: PersistentVolumeClaim
+    metadata:
+      name: guestbook-ui-pvc
+      labels:
+        app: guestbook-ui
+    spec:
+      accessModes:
+        - ReadWriteOnce
+      resources:
+        requests:
+          storage: 1Gi
   - apiVersion: apps/v1
     kind: Deployment
     metadata:
@@ -47,7 +72,8 @@ items:
                   readOnly: true
           volumes:
             - name: storage-volume
-              emptyDir: {}
+              persistentVolumeClaim:
+                claimName: guestbook-ui-pvc
             - name: config-volume
               configMap:
                 name: guestbook-ui-config
@@ -58,12 +84,32 @@ items:
       labels:
         app: guestbook-ui
     spec:
-      type: LoadBalancer
+      type: ClusterIP
       ports:
       - port: 80
         targetPort: 80
       selector:
         app: guestbook-ui
+  - apiVersion: networking.k8s.io/v1
+    kind: Ingress
+    metadata:
+      name: guestbook-ui-ingress
+      labels:
+        app: guestbook-ui
+      annotations:
+        nginx.ingress.kubernetes.io/rewrite-target: /
+    spec:
+      rules:
+      - host: guestbook.example.com
+        http:
+          paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: guestbook-ui
+                port:
+                  number: 80
   - apiVersion: autoscaling/v2
     kind: HorizontalPodAutoscaler
     metadata:
