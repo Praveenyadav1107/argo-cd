@@ -8,7 +8,6 @@ data:
   app.properties: |
     theme=light
     feature_flag=true
----
 
 apiVersion: v1
 kind: PersistentVolumeClaim
@@ -22,8 +21,6 @@ accessModes:
 resources:
 requests:
 storage: 1Gi
-
----
 
 apiVersion: apps/v1
 kind: Deployment
@@ -67,8 +64,6 @@ claimName: guestbook-ui-pvc
 configMap:
 name: guestbook-ui-config
 
----
-
 apiVersion: v1
 kind: Service
 metadata:
@@ -83,8 +78,6 @@ port: 80
 targetPort: 80
 selector:
 app: guestbook-ui
-
----
 
 apiVersion: networking.k8s.io/v1
 kind: Ingress
@@ -108,8 +101,6 @@ service:
 name: guestbook-ui
 port:
 number: 80
-
----
 
 apiVersion: autoscaling/v2
 kind: HorizontalPodAutoscaler
