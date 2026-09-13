@@ -11,18 +11,6 @@ items:
       app.properties: |
         theme=light
         feature_flag=true
-  - apiVersion: v1
-    kind: PersistentVolumeClaim
-    metadata:
-      name: guestbook-ui-pvc
-      labels:
-        app: guestbook-ui
-    spec:
-      accessModes:
-        - ReadWriteOnce
-      resources:
-        requests:
-          storage: 1Gi
   - apiVersion: apps/v1
     kind: Deployment
     metadata:
@@ -59,8 +47,7 @@ items:
                   readOnly: true
           volumes:
             - name: storage-volume
-              persistentVolumeClaim:
-                claimName: guestbook-ui-pvc
+              emptyDir: {}
             - name: config-volume
               configMap:
                 name: guestbook-ui-config
