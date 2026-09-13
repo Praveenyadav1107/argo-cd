@@ -58,32 +58,12 @@ items:
       labels:
         app: guestbook-ui
     spec:
-      type: ClusterIP
+      type: LoadBalancer
       ports:
       - port: 80
         targetPort: 80
       selector:
         app: guestbook-ui
-  - apiVersion: networking.k8s.io/v1
-    kind: Ingress
-    metadata:
-      name: guestbook-ui-ingress
-      labels:
-        app: guestbook-ui
-      annotations:
-        nginx.ingress.kubernetes.io/rewrite-target: /
-    spec:
-      rules:
-      - host: guestbook.example.com
-        http:
-          paths:
-          - path: /
-            pathType: Prefix
-            backend:
-              service:
-                name: guestbook-ui
-                port:
-                  number: 80
   - apiVersion: autoscaling/v2
     kind: HorizontalPodAutoscaler
     metadata:
